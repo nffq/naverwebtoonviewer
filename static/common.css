@@ -1,0 +1,246 @@
+@font-face {
+    font-family: "Pretendard";
+    font-weight: 45 920;
+    font-style: normal;
+    font-display: swap;
+    src: url("PretendardVariable.woff2") format("woff2-variations")
+}
+
+:root {
+    font-family: "Pretendard", sans-serif;
+    font-size: 12px;
+    --main-bg-color: #fff;
+    --main-color: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --main-bg-color: #181818;
+        --main-color: #fff;
+    }
+}
+
+@media (max-width: 500px) {
+    :root {
+        font-size: 2.4vw;
+    }
+}
+
+img {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    display: block;
+    color: unset;
+    text-decoration: none;
+}
+
+a:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--main-bg-color);
+    color: var(--main-color);
+}
+
+.reader {
+    width: min(100%, 500px);
+    margin: auto;
+}
+
+.title {
+    width: 32rem;
+    margin: auto;
+}
+
+.title>.thumbnail {
+    margin: 5rem 0 2rem 0;
+}
+
+.title>.thumbnail>img {
+    width: 32rem;
+    height: 46.4rem;
+    border-radius: .5rem;
+    outline: .5px solid #8886;
+}
+
+.title>.banner {
+    width: 35rem;
+    height: 20.7rem;
+    margin: 2rem 0 2rem -1.5rem;
+}
+
+.title>.name {
+    font-size: 1.8rem;
+    font-weight: 600;
+    width: fit-content;
+    margin-bottom: 1rem;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+.title>.synopsis {
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.8rem;
+    margin: 2rem 0 2.5rem 0;
+    white-space: pre-line;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+.artist {
+    font-size: 1.4rem;
+    font-weight: 500;
+    display: inline-flex;
+    gap: .6rem;
+}
+
+.artist::after {
+    content: "/";
+    margin-right: .6rem;
+}
+
+.artist:last-child::after {
+    display: none;
+}
+
+.artist>.name {
+    display: flex;
+}
+
+.artist>.name[href]::after {
+    content: url("verified.svg");
+    width: 1.5rem;
+    margin-left: .4rem;
+}
+
+.artist>.role {
+    color: #999;
+}
+
+.subtitles {
+    margin-bottom: -4rem;
+}
+
+.subtitle {
+    display: flex;
+    height: 7rem;
+    align-items: center;
+}
+
+.subtitle:visited {
+    color: #999;
+}
+
+.subtitle>.thumbnail {
+    width: 9.4rem;
+    height: 5.6rem;
+    margin-right: 2rem;
+    border-radius: .5rem;
+    outline: .5px solid #8886;
+}
+
+.subtitle>.desc {
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.8rem;
+    margin-left: auto;
+    text-align: right;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+.subtitle>.desc>.name {
+    margin-bottom: .6rem;
+}
+
+.subtitle>.desc>.date {
+    color: #999;
+    float: right;
+}
+
+.subtitle_images>img {
+    width: 100%;
+}
+
+.comment {
+    width: 32rem;
+    margin: 5rem auto;
+}
+
+.comment>.title {
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.comment>.date {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    color: #999;
+}
+
+.comment>.content {
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.8rem;
+    white-space: pre-wrap;
+    word-break: keep-all; /* cjk */
+    overflow-wrap: break-word;
+}
+
+.latch {
+    font-size: 1.3rem;
+    font-weight: 500;
+    background-color: var(--main-bg-color);
+    align-content: center;
+    text-align: center;
+    width: inherit;
+    height: 5rem;
+}
+
+.latch.top {
+    display: none;
+    position: fixed;
+    top: 0;
+}
+
+.latch.bottom {
+    margin-top: 3rem;
+    bottom: 0;
+}
+
+.active~.latch.top {
+    display: unset;
+}
+
+.active~.latch.bottom {
+    position: sticky;
+}
+
+.navigator {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin: 7rem auto 5rem auto;
+    width: fit-content;
+    display: flex;
+    gap: 2rem;
+}
+
+.button {
+    margin: 0 2rem;
+    float: right;
+}
+
+.button:not([href]) {
+    color: #999;
+}
