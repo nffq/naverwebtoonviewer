@@ -43,6 +43,14 @@ $result = $db->query("
 while ($artist = $result->fetchArray(SQLITE3_ASSOC))
     $artists[$artist["title_id"]][] = $artist;
 
+function html_esc($str) {
+    return strtr($str, array(
+        "<br>" => "\n",
+        "<" => "&lt;",
+        ">" => "&gt;"
+	));
+};
+
 require_once("templates/index.php");
 
 ?>

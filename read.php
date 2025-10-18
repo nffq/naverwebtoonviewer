@@ -36,6 +36,14 @@ $result = $db->query("
 while ($subtitle_image = $result->fetchArray(SQLITE3_ASSOC))
     $subtitle_images[] = $subtitle_image;
 
+function html_esc($str) {
+    return strtr($str, array(
+        "<br>" => "\n",
+        "<" => "&lt;",
+        ">" => "&gt;"
+	));
+};
+
 require_once("templates/read.php");
 
 ?>
