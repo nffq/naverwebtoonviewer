@@ -3,7 +3,7 @@
     font-weight: 45 920;
     font-style: normal;
     font-display: swap;
-    src: url("PretendardVariable.woff2") format("woff2-variations")
+    src: url("PretendardVariable.woff2") format("woff2-variations");
 }
 
 :root {
@@ -80,7 +80,7 @@ body {
 .title>.name {
     font-size: 1.8rem;
     font-weight: 600;
-    width: fit-content;
+    max-width: fit-content;
     margin-bottom: 1rem;
     word-break: keep-all;
     overflow-wrap: break-word;
