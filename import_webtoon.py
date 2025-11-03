@@ -9,14 +9,12 @@ from mimetypes import guess_extension
 from cryptography.hazmat.primitives import hashes, hmac
 from urllib.parse import quote
 
-MOBILE_SECRET = b""
-MOBILE_AGENT = ""
-DESKTOP_AGENT = ""
-
-
 class WebtoonClient:
-    def __init__(self) -> None:
+    def __init__(self, secret: str, mobile_agent: str, desktop_agent: str) -> None:
         self.session = requests.Session()
+        self.secret = secret.encode("utf-8")
+        self.mobile_agent = mobile_agent
+        self.desktop_agent = desktop_agent
 
     def close(self) -> None:
         self.session.close()
@@ -24,20 +22,20 @@ class WebtoonClient:
     def __get_mobile(self, url: str) -> dict:
         timestamp = int(datetime.now().timestamp() * 1000)
 
-        signer = hmac.HMAC(MOBILE_SECRET, hashes.SHA1())
+        signer = hmac.HMAC(self.secret, hashes.SHA1())
         signer.update(f"{url}{timestamp}".encode("utf-8"))
         signature = quote(b64encode(signer.finalize()), safe="")
 
         response = self.session.get(
             f"{url}&msgpad={timestamp}&md={signature}",
-            headers={"User-Agent": MOBILE_AGENT}
+            headers={"User-Agent": self.mobile_agent}
         ).json()
         if response["code"] != 20002:
             raise IOError(f"failed: {response["message"]}")
         return response["result"]
 
     def __get_desktop(self, url: str) -> requests.Response:
-        response = self.session.get(url, headers={"User-Agent": DESKTOP_AGENT})
+        response = self.session.get(url, headers={"User-Agent": self.desktop_agent})
         response.raise_for_status()
         return response
 
@@ -70,10 +68,7 @@ class WebtoonClient:
         return media_location
 
 
-def fetch_title_data(
-    client: WebtoonClient,
-    title_id: int
-) -> None:
+def fetch_title_data(client: WebtoonClient, title_id: int) -> None:
     res = {}
 
     title_info_desktop = client.fetch_title_info_desktop(title_id)
@@ -127,12 +122,7 @@ def fetch_title_data(
     print(f"fetched: {res["title"]["name"]}")
     return res
 
-def import_title_data(
-    connection: sqlite3.Connection,
-    title: dict,
-    subtitles: List[dict],
-    artists: List[dict]
-) -> None:
+def import_title_data(connection: sqlite3.Connection, title: dict, subtitles: List[dict], artists: List[dict]) -> None:
     cursor = connection.cursor()
     cursor.execute("PRAGMA foreign_keys = ON;")
 
