@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import List
 from tqdm import tqdm
 from mimetypes import guess_extension
-from cryptography.hazmat.primitives import hashes, hmac
+from hmac import digest
 from urllib.parse import quote
 
 class WebtoonClient:
@@ -22,9 +22,8 @@ class WebtoonClient:
     def __get_mobile(self, url: str) -> dict:
         timestamp = int(datetime.now().timestamp() * 1000)
 
-        signer = hmac.HMAC(self.secret, hashes.SHA1())
-        signer.update(f"{url}{timestamp}".encode("utf-8"))
-        signature = quote(b64encode(signer.finalize()), safe="")
+        signature = digest(self.secret, f"{url}{timestamp}".encode("utf-8"), "sha1")
+        signature = quote(b64encode(signature), safe="")
 
         response = self.session.get(
             f"{url}&msgpad={timestamp}&md={signature}",

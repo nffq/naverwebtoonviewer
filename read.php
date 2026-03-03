@@ -41,7 +41,7 @@ function html_esc($str) {
         "<br>" => "\n",
         "<" => "&lt;",
         ">" => "&gt;"
-	));
+    ));
 };
 
 require_once("templates/read.php");
