@@ -7,7 +7,6 @@ from typing import List
 from tqdm import tqdm
 from mimetypes import guess_extension
 from hmac import digest
-from urllib.parse import quote
 
 class WebtoonClient:
     def __init__(self, secret: str, mobile_agent: str, desktop_agent: str) -> None:
@@ -21,13 +20,16 @@ class WebtoonClient:
 
     def __get_mobile(self, url: str) -> dict:
         timestamp = int(datetime.now().timestamp() * 1000)
-
-        signature = digest(self.secret, f"{url}{timestamp}".encode("utf-8"), "sha1")
-        signature = quote(b64encode(signature), safe="")
+        signature = digest(self.secret, f"{url}{timestamp}".encode("utf-8"), "sha256")
 
         response = self.session.get(
-            f"{url}&msgpad={timestamp}&md={signature}",
-            headers={"User-Agent": self.mobile_agent}
+            url,
+            headers={
+                "User-Agent": self.mobile_agent,
+                "n-hmac-key-id": "AND",
+                "n-hmac-signature": b64encode(signature),
+                "n-hmac-timestamp": str(timestamp)
+            }
         ).json()
         if response["code"] != 20002:
             raise IOError(f"failed: {response["message"]}")
@@ -45,17 +47,17 @@ class WebtoonClient:
 
     def fetch_title_info_mobile(self, title_id: int) -> dict:
         return self.__get_mobile(
-            f"https://apis.naver.com/mobiletoon/comic/webtoonTitleInfo.json?titleId={title_id}&deviceCode=MOBILE_APP_ANDROID"
+            f"https://gateway.comic.naver.com/webtoonTitleInfo?titleId={title_id}&deviceCode=MOBILE_APP_ANDROID"
         )
 
     def fetch_subtitle_list(self, title_id: int) -> List[dict]:
         return self.__get_mobile(
-            f"https://apis.naver.com/mobiletoon/comic/webtoonArticleList.json?titleId={title_id}&deviceCode=MOBILE_APP_ANDROID"
+            f"https://gateway.comic.naver.com/webtoonArticleList?titleId={title_id}&deviceCode=MOBILE_APP_ANDROID"
         )
 
     def fetch_author_comment(self, title_id: int, subtitle_id: int) -> dict:
         return self.__get_mobile(
-            f"https://apis.naver.com/mobiletoon/comic/authorActivity?titleId={title_id}&no={subtitle_id}&deviceCode=MOBILE_APP_ANDROID"
+            f"https://gateway.comic.naver.com/authorActivity?titleId={title_id}&no={subtitle_id}&deviceCode=MOBILE_APP_ANDROID"
         )
 
     def fetch_media(self, url: str, destination: str) -> str:
