@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . "/../config.php");
+
 $title_id = filter_var($_GET["titleId"] ?? "", FILTER_VALIDATE_INT);
 $page = filter_var($_GET["page"] ?? 1, FILTER_VALIDATE_INT);
 
@@ -8,10 +10,10 @@ if ($title_id === false || $page === false || $page < 1) {
     die("query does not exist");
 }
 
-$db = new SQLite3("db.sqlite", SQLITE3_OPEN_READONLY);
+$db = new SQLite3(DB_PATH, SQLITE3_OPEN_READONLY);
 
 $result = $db->query("
-    SELECT MAX(id) AS cnt  -- dense
+    SELECT MAX(id) AS cnt
     FROM subtitle
     WHERE title_id = $title_id;
 ");
@@ -25,22 +27,11 @@ if ($page_max < $page) {
 }
 
 $result = $db->query("
-    SELECT name, synopsis, banner
+    SELECT name, synopsis
     FROM title
     WHERE id = $title_id;
 ");
 $title = $result->fetchArray(SQLITE3_ASSOC);
-
-$subtitles = [];
-$result = $db->query("
-    SELECT id, name, date, thumbnail
-    FROM subtitle
-    WHERE title_id = $title_id AND id > " . ($page * 20 - 20) . "
-    ORDER BY id
-    LIMIT 20;
-");
-while ($subtitle = $result->fetchArray(SQLITE3_ASSOC))
-    $subtitles[] = $subtitle;
 
 $artists = [];
 $result = $db->query("
@@ -52,14 +43,15 @@ $result = $db->query("
 while ($artist = $result->fetchArray(SQLITE3_ASSOC))
     $artists[] = $artist;
 
-function html_esc($str) {
-    return strtr($str, array(
-        "<br>" => "\n",
-        "<" => "&lt;",
-        ">" => "&gt;"
-    ));
-};
+$subtitles = [];
+$result = $db->query("
+    SELECT id, name, date
+    FROM subtitle
+    WHERE title_id = $title_id AND id > " . ($page * 20 - 20) . "
+    ORDER BY id
+    LIMIT 20;
+");
+while ($subtitle = $result->fetchArray(SQLITE3_ASSOC))
+    $subtitles[] = $subtitle;
 
-require_once("templates/list.php");
-
-?>
+require_once(__DIR__ . "/../templates/list.php");

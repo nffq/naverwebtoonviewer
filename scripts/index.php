@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . "/../config.php");
+
 $page = filter_var($_GET["page"] ?? 1, FILTER_VALIDATE_INT);
 
 if ($page === false || $page < 1) {
@@ -7,7 +9,7 @@ if ($page === false || $page < 1) {
     die("query does not exist");
 }
 
-$db = new SQLite3("db.sqlite", SQLITE3_OPEN_READONLY);
+$db = new SQLite3(DB_PATH, SQLITE3_OPEN_READONLY);
 
 $result = $db->query("
     SELECT MAX(rowid) AS cnt
@@ -24,7 +26,7 @@ if ($page_max < $page) {
 
 $titles = [];
 $result = $db->query("
-    SELECT id, name, thumbnail
+    SELECT id, name
     FROM title
     WHERE rowid > " . ($page * 10 - 10) . "
     ORDER BY rowid
@@ -43,14 +45,4 @@ $result = $db->query("
 while ($artist = $result->fetchArray(SQLITE3_ASSOC))
     $artists[$artist["title_id"]][] = $artist;
 
-function html_esc($str) {
-    return strtr($str, array(
-        "<br>" => "\n",
-        "<" => "&lt;",
-        ">" => "&gt;"
-    ));
-};
-
-require_once("templates/index.php");
-
-?>
+require_once(__DIR__ . "/../templates/index.php");
