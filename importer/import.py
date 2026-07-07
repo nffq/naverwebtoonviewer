@@ -58,20 +58,36 @@ def pull_data(client: WebClient, media_root: Path, title_id: int) -> tuple:
 def push_data(client: DatabaseClient, title: list, artists: list, subtitles: list):
     cursor = client.cursor()
 
-    cursor.execute(
-        "INSERT OR REPLACE INTO title VALUES (:id, :name, :synopsis);",
+    cursor.execute("""
+        INSERT INTO title
+        VALUES (:id, :name, :synopsis)
+        ON CONFLICT(id)
+        DO UPDATE SET
+            name = excluded.name,
+            synopsis = excluded.synopsis;
+        """,
         title
     )
-    cursor.executemany(
-        "INSERT OR REPLACE INTO artist VALUES (:id, :name, :profile);",
+    cursor.executemany("""
+        INSERT INTO artist
+        VALUES (:id, :name, :profile)
+        ON CONFLICT(id)
+        DO UPDATE SET
+            name = excluded.name,
+            profile = excluded.profile;
+        """,
         artists
     )
-    cursor.executemany(
-        f"INSERT OR REPLACE INTO title_artist VALUES ({title['id']}, :id, :role);",
+    cursor.executemany(f"""
+        INSERT OR REPLACE INTO title_artist
+        VALUES ({title['id']}, :id, :role);
+        """,
         artists
     )
-    cursor.executemany(
-        f"INSERT OR REPLACE INTO subtitle VALUES ({title['id']}, :id, :date, :image_cnt, :name, :comment);",
+    cursor.executemany(f"""
+        INSERT OR REPLACE INTO subtitle
+        VALUES ({title['id']}, :id, :date, :image_cnt, :name, :comment);
+        """,
         subtitles
     )
 

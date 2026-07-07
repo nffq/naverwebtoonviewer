@@ -1,39 +1,31 @@
 <?php
 
-require_once(__DIR__ . "/../config.php");
+require __DIR__ . "/../config.php";
 
 $page = filter_var($_GET["page"] ?? 1, FILTER_VALIDATE_INT);
 
-if ($page === false || $page < 1) {
-    http_response_code(400);
-    die("query does not exist");
+if ($page < 1) {
+    require __DIR__ . "/../templates/error.php";
+    exit;
 }
 
 $db = new SQLite3(DB_PATH, SQLITE3_OPEN_READONLY);
-
-$result = $db->query("
-    SELECT MAX(rowid) AS cnt
-    FROM title;
-");
-$title_cnt = $result->fetchArray(SQLITE3_ASSOC);
-$page_max = ceil($title_cnt["cnt"] / 10);
-
-if ($page_max < $page) {
-    $db->close();
-    http_response_code(400);
-    die("query does not exist");
-}
 
 $titles = [];
 $result = $db->query("
     SELECT id, name
     FROM title
-    WHERE rowid > " . ($page * 10 - 10) . "
+    WHERE rowid > " . (($page - 1) * TITLE_CNT) . "
     ORDER BY rowid
-    LIMIT 10;
+    LIMIT " . TITLE_CNT . ";
 ");
-while ($title = $result->fetchArray(SQLITE3_ASSOC))
+while ($title = $result->fetchArray())
     $titles[] = $title;
+
+if (empty($titles)) {
+    require __DIR__ . "/../templates/error.php";
+    exit;
+}
 
 $artists = [];
 $result = $db->query("
@@ -42,7 +34,13 @@ $result = $db->query("
     JOIN artist AS a ON a.id = ta.artist_id
     WHERE ta.title_id IN (" . implode(",", array_column($titles, "id")) . ");
 ");
-while ($artist = $result->fetchArray(SQLITE3_ASSOC))
+while ($artist = $result->fetchArray())
     $artists[$artist["title_id"]][] = $artist;
 
-require_once(__DIR__ . "/../templates/index.php");
+$title_cnt = $db->querySingle("
+    SELECT MAX(rowid)
+    FROM title;
+");
+$page_max = ceil($title_cnt / TITLE_CNT);
+
+require __DIR__ . "/../templates/index.php";

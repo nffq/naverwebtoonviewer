@@ -14,7 +14,6 @@ class DatabaseClient(sqlite3.Connection):
                 id          INTEGER NOT NULL UNIQUE,
                 name        TEXT NOT NULL,
                 synopsis    TEXT NOT NULL
-                -- PRIMARY KEY (id)     -- split indexing
             );
         """)
 
@@ -33,9 +32,9 @@ class DatabaseClient(sqlite3.Connection):
                 title_id    INTEGER NOT NULL,
                 artist_id   INTEGER NOT NULL,
                 role        TEXT NOT NULL,
+                PRIMARY KEY (title_id, artist_id),
                 FOREIGN KEY (title_id) REFERENCES title (id) ON DELETE CASCADE,
-                FOREIGN KEY (artist_id) REFERENCES artist (id) ON DELETE CASCADE,
-                PRIMARY KEY (title_id, artist_id)
+                FOREIGN KEY (artist_id) REFERENCES artist (id) ON DELETE CASCADE
             );
         """)
 
@@ -48,7 +47,7 @@ class DatabaseClient(sqlite3.Connection):
                 image_cnt   INTEGER NOT NULL,
                 name        TEXT NOT NULL,
                 comment     TEXT,
-                FOREIGN KEY (title_id) REFERENCES title (id) ON DELETE CASCADE,
-                PRIMARY KEY (title_id, id)
+                PRIMARY KEY (title_id, id),
+                FOREIGN KEY (title_id) REFERENCES title (id) ON DELETE CASCADE
             );
         """)

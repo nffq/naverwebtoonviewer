@@ -1,37 +1,39 @@
 <?php
 
-require_once(__DIR__ . "/../config.php");
+require __DIR__ . "/../config.php";
 
-$title_id = filter_var($_GET["titleId"] ?? "", FILTER_VALIDATE_INT);
+$title_id = filter_var($_GET["titleId"] ?? 0, FILTER_VALIDATE_INT);
 $page = filter_var($_GET["page"] ?? 1, FILTER_VALIDATE_INT);
 
-if ($title_id === false || $page === false || $page < 1) {
-    http_response_code(400);
-    die("query does not exist");
+if ($title_id < 1 || $page < 1) {
+    require __DIR__ . "/../templates/error.php";
+    exit;
 }
 
 $db = new SQLite3(DB_PATH, SQLITE3_OPEN_READONLY);
 
+$subtitles = [];
 $result = $db->query("
-    SELECT MAX(id) AS cnt
+    SELECT id, name, date
     FROM subtitle
-    WHERE title_id = $title_id;
+    WHERE title_id = $title_id
+    AND id > " . (($page - 1) * SUBTITLE_CNT) . "
+    ORDER BY id
+    LIMIT " . SUBTITLE_CNT . ";
 ");
-$subtitle_cnt = $result->fetchArray(SQLITE3_ASSOC);
-$page_max = ceil($subtitle_cnt["cnt"] / 20);
+while ($subtitle = $result->fetchArray())
+    $subtitles[] = $subtitle;
 
-if ($page_max < $page) {
-    $db->close();
-    http_response_code(400);
-    die("query does not exist");
+if (empty($subtitles)) {
+    require __DIR__ . "/../templates/error.php";
+    exit;
 }
 
-$result = $db->query("
+$title = $db->querySingle("
     SELECT name, synopsis
     FROM title
     WHERE id = $title_id;
-");
-$title = $result->fetchArray(SQLITE3_ASSOC);
+", true);
 
 $artists = [];
 $result = $db->query("
@@ -40,18 +42,14 @@ $result = $db->query("
     JOIN artist AS a ON a.id = ta.artist_id
     WHERE ta.title_id = $title_id;
 ");
-while ($artist = $result->fetchArray(SQLITE3_ASSOC))
+while ($artist = $result->fetchArray())
     $artists[] = $artist;
 
-$subtitles = [];
-$result = $db->query("
-    SELECT id, name, date
+$subtitle_cnt = $db->querySingle("
+    SELECT MAX(id)
     FROM subtitle
-    WHERE title_id = $title_id AND id > " . ($page * 20 - 20) . "
-    ORDER BY id
-    LIMIT 20;
+    WHERE title_id = $title_id;
 ");
-while ($subtitle = $result->fetchArray(SQLITE3_ASSOC))
-    $subtitles[] = $subtitle;
+$page_max = ceil($subtitle_cnt / SUBTITLE_CNT);
 
-require_once(__DIR__ . "/../templates/list.php");
+require __DIR__ . "/../templates/list.php";
