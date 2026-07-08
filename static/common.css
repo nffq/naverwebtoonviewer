@@ -33,7 +33,6 @@ img {
 }
 
 a {
-    display: block;
     color: unset;
     text-decoration: none;
 }
@@ -52,23 +51,15 @@ body {
     overflow-wrap: break-word;
 }
 
-.reader {
-    width: min(100%, 500px);
-    margin: auto;
-}
-
 .title {
     width: 32rem;
     margin: auto;
 }
 
-.title>.thumbnail {
-    margin: 5rem 0 2rem 0;
-}
-
 .title>.thumbnail>img {
     width: 32rem;
     height: 46.4rem;
+    margin: 5rem 0 2rem 0;
     border-radius: .5rem;
     outline: .5px solid #8886;
 }
@@ -82,8 +73,10 @@ body {
 .title>.name {
     font-size: 1.8rem;
     font-weight: 600;
-    max-width: fit-content;
-    margin-bottom: 1rem;
+}
+
+.title>.artists {
+    margin-top: 1rem;
 }
 
 .title>.synopsis {
@@ -137,7 +130,7 @@ body {
 .subtitle>.thumbnail {
     width: 9.4rem;
     height: 5.6rem;
-    margin-right: 2rem;
+    margin-right: auto;
     border-radius: .5rem;
     outline: .5px solid #8886;
 }
@@ -150,11 +143,9 @@ body {
     text-align: right;
 }
 
-.subtitle>.desc>.name {
-    margin-bottom: .6rem;
-}
-
 .subtitle>.desc>.date {
+    display: inline-block;
+    margin-top: .6rem;
     color: #999;
 }
 
@@ -187,17 +178,19 @@ body {
     white-space: pre-wrap;
 }
 
+.reader {
+    max-width: 500px;
+    margin: -5rem auto 0 auto;
+}
+
 .latch {
-    width: inherit;
+    height: 5rem;
     font-size: 1.3rem;
     font-weight: 500;
     background-color: var(--main-bg-color);
-    height: 5rem;
 }
 
 .latch.top {
-    display: none;
-    position: fixed;
     align-content: center;
     text-align: center;
     top: 0;
@@ -209,21 +202,15 @@ body {
     bottom: 0;
 }
 
-.active~.latch.top {
-    display: unset;
-}
-
-.active~.latch.bottom {
+.active>.latch {
     position: sticky;
 }
 
 .navigator {
-    display: flex;
     width: fit-content;
     font-size: 1.3rem;
     font-weight: 500;
     margin: 7rem auto 5rem auto;
-    gap: 2rem;
 }
 
 .button {

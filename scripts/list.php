@@ -30,10 +30,11 @@ if (empty($subtitles)) {
 }
 
 $title = $db->querySingle("
-    SELECT name, synopsis
+    SELECT rowid, name, synopsis
     FROM title
     WHERE id = $title_id;
 ", true);
+$title_page = ceil($title["rowid"] / TITLE_CNT);
 
 $artists = [];
 $result = $db->query("
