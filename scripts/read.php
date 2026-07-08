@@ -29,5 +29,6 @@ $subtitle_cnt = $db->querySingle("
     FROM subtitle
     WHERE title_id = $title_id;
 ");
+$subtitle_page = ceil($subtitle_id / SUBTITLE_CNT);
 
 require __DIR__ . "/../templates/read.php";

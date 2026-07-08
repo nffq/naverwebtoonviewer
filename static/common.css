@@ -48,6 +48,8 @@ body {
     padding: 0;
     background-color: var(--main-bg-color);
     color: var(--main-color);
+    word-break: keep-all; /* cjk */
+    overflow-wrap: break-word;
 }
 
 .reader {
@@ -82,8 +84,6 @@ body {
     font-weight: 600;
     max-width: fit-content;
     margin-bottom: 1rem;
-    word-break: keep-all;
-    overflow-wrap: break-word;
 }
 
 .title>.synopsis {
@@ -92,24 +92,18 @@ body {
     line-height: 1.8rem;
     margin: 2rem 0 2.5rem 0;
     white-space: pre-line;
-    word-break: keep-all;
-    overflow-wrap: break-word;
 }
 
 .artist {
+    display: inline-flex;
     font-size: 1.4rem;
     font-weight: 500;
-    display: inline-flex;
     gap: .6rem;
 }
 
-.artist::after {
+.artist:not(:last-child)::after {
     content: "/";
     margin-right: .6rem;
-}
-
-.artist:last-child::after {
-    display: none;
 }
 
 .artist>.name {
@@ -149,13 +143,11 @@ body {
 }
 
 .subtitle>.desc {
+    width: 20.6rem;
     font-size: 1.3rem;
     font-weight: 600;
     line-height: 1.8rem;
-    margin-left: auto;
     text-align: right;
-    word-break: keep-all;
-    overflow-wrap: break-word;
 }
 
 .subtitle>.desc>.name {
@@ -164,7 +156,6 @@ body {
 
 .subtitle>.desc>.date {
     color: #999;
-    float: right;
 }
 
 .subtitle_images>img {
@@ -194,27 +185,26 @@ body {
     font-weight: 400;
     line-height: 1.8rem;
     white-space: pre-wrap;
-    word-break: keep-all; /* cjk */
-    overflow-wrap: break-word;
 }
 
 .latch {
+    width: inherit;
     font-size: 1.3rem;
     font-weight: 500;
     background-color: var(--main-bg-color);
-    align-content: center;
-    text-align: center;
-    width: inherit;
     height: 5rem;
 }
 
 .latch.top {
     display: none;
     position: fixed;
+    align-content: center;
+    text-align: center;
     top: 0;
 }
 
 .latch.bottom {
+    display: flex;
     margin-top: 3rem;
     bottom: 0;
 }
@@ -228,19 +218,22 @@ body {
 }
 
 .navigator {
+    display: flex;
+    width: fit-content;
     font-size: 1.3rem;
     font-weight: 500;
     margin: 7rem auto 5rem auto;
-    width: fit-content;
-    display: flex;
     gap: 2rem;
 }
 
 .button {
-    margin: 0 2rem;
-    float: right;
+    margin: auto 2rem;
 }
 
 .button:not([href]) {
     color: #999;
+}
+
+.latch>.button:first-child {
+    margin-right: auto;
 }
